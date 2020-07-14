@@ -1,0 +1,11 @@
+name: ebay_api_config
+
+
+# Finding API - https://www.x.com/developers/ebay/products/finding-api
+svcs.ebay.com:
+    appid: JamesBar-jamiesax-PRD-3c8ee5144-31c41e3a
+
+# Shopping API - https://www.x.com/developers/ebay/products/shopping-api
+open.api.ebay.com:
+    appid: JamesBar-jamiesax-PRD-3c8ee5144-31c41e3a
+
