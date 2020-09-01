@@ -1,3 +1,8 @@
 saxenv/
 s3-python/
 data/
+package/
+__pycache__/
+.vscode/
+.DS_Store
+
