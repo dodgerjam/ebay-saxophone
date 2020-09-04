@@ -71,51 +71,66 @@ app.layout = html.Div([
         ], className="col-md-12")
     ], className="row"),
     # Row: Scatter Chart + Selected Listing
-    html.Div([
-        # Dropdown Scatter Options
-        html.Div([
-            dcc.Dropdown(
-                options = [{'label': x, 'value': x} for x in df['ItemSpecifics-Type'].unique() if x == x],
-                value = sorted([x for x in df['ItemSpecifics-Type'].unique() if x ==x]),
-                multi=True,
-                className = "col-md-4",
-                id = 'scatter-dropdown-type'
-            ),
-            dcc.Dropdown(
-                options = [{'label': x, 'value': x} for x in df['Condition'].unique() if x == x],
-                value = sorted([x for x in df['Condition'].unique() if x ==x]),
-                multi=True,
-                className = "col-md-4",
-                id = 'scatter-dropdown-condition'
-            ),
-        ]),
-        html.Div([
-            dcc.Dropdown(
-                options = [{'label': x, 'value': x} for x in df['ItemSpecifics-Brand'].unique() if x == x],
-                value = sorted([x for x in df['ItemSpecifics-Brand'].unique() if x ==x]),
-                multi=True,
-                className = "col-md-8",
-                id = 'scatter-dropdown-brand'
-            ),       
-        ]),
-        html.Div([
-            dcc.Graph(figure = scatter_fig, id = 'scatter-figure'),
-            dcc.RadioItems(
-                id='scatter-color-selector',
-                options=[
-                    {'label': 'Type', 'value': 'ItemSpecifics-Type'},
-                    {'label': 'Brand', 'value': 'ItemSpecifics-Brand'},
-                    {'label': 'Model', 'value': 'Model'},
-                    {'label': 'Condition', 'value': 'Condition'},
 
-                ],
-                value='None',
-                labelStyle={'display': 'inline-block'},
-                style={"textAlign": "centre"},
-            )
-        ], className="col-md-8"),
+    html.Div([
+        # Scatter Graph and Dropdown
         html.Div([
-            html.H4("Selected Sax Listing", className="text-center"),
+            html.Div([
+                html.H4([
+                    "Scatter Chart",
+                ], className="container_title"),
+            ]),
+            # Dropdown Scatter Options
+            html.Div([
+                dcc.Dropdown(
+                    options = [{'label': x, 'value': x} for x in df['ItemSpecifics-Type'].unique() if x == x],
+                    value = sorted([x for x in df['ItemSpecifics-Type'].unique() if x ==x]),
+                    multi=True,
+                    className = "col-md-6",
+                    id = 'scatter-dropdown-type'
+                ),
+                dcc.Dropdown(
+                    options = [{'label': x, 'value': x} for x in df['Condition'].unique() if x == x],
+                    value = sorted([x for x in df['Condition'].unique() if x ==x]),
+                    multi=True,
+                    className = "col-md-6",
+                    id = 'scatter-dropdown-condition'
+                ),
+            ]),
+            html.Div([
+                dcc.Dropdown(
+                    options = [{'label': x, 'value': x} for x in df['ItemSpecifics-Brand'].unique() if x == x],
+                    value = sorted([x for x in df['ItemSpecifics-Brand'].unique() if x ==x]),
+                    multi=True,
+                    className = "col-md-12",
+                    id = 'scatter-dropdown-brand'
+                ),       
+            ]),
+            # Graph Dropdown
+            html.Div([
+                dcc.Graph(figure = scatter_fig, id = 'scatter-figure'),
+                dcc.RadioItems(
+                    id='scatter-color-selector',
+                    options=[
+                        {'label': 'Type', 'value': 'ItemSpecifics-Type'},
+                        {'label': 'Brand', 'value': 'ItemSpecifics-Brand'},
+                        {'label': 'Model', 'value': 'Model'},
+                        {'label': 'Condition', 'value': 'Condition'},
+
+                    ],
+                    value='None',
+                    labelStyle={'display': 'inline-block'},
+                    style={"textAlign": "centre"},
+                )
+            ], className="col-md-12"),
+        ], className = 'eight columns pretty_container'),
+        # Selected Sax Listing
+        html.Div([
+            html.Div([
+                html.H4([
+                    "Selected Sax Listing",
+                ], className="container_title"),
+            ]),
             html.Div([
                 html.Button('<', id='left-image-click', n_clicks=0,style = dict(display='none')),
                 html.A(
@@ -124,55 +139,69 @@ app.layout = html.Div([
                 html.Button('>', id='right-image-click', n_clicks=0, style = dict(display='none'))],
             style={'textAlign': 'center'},
             ),
-        ], id = 'selected-sax-listing')
-    ], className="row"),    
+        ], id = 'selected-sax-listing',
+        className='four columns pretty_container'),
+    ], className = 'row'),     
     
     html.Div([
-        # Sunburst Figure
         html.Div([
-            dcc.Graph(figure = sunburst_fig, id = 'sunburst-figure')
-        ],
-        className="col-md-4"),
-        # Sunburst Dropdown Options
-        html.Div([
-            html.Br(),
-            html.H4('Add or Subtract Layers!'),
-            html.Button('+', id='add-layer-button', n_clicks=0),
-            html.Button('-', id='subtract-layer-button', n_clicks=0),
-            html.Br(),
-            html.H4('Select Layers!'),
             html.Div([
-                dcc.Dropdown(
-                    id={
-                        'type' : 'sunburst-layer-dropdown',
-                        'index' : 1,  
-                    },
-                    options=[{'label': x, 'value': x} for x in available_indicators[1:]],
-                    value='ItemSpecifics-Brand'
-                ),
-                dcc.Dropdown(
-                    id={
-                        'type' : 'sunburst-layer-dropdown',
-                        'index' : 2,  
-                    },
-                    options=[{'label': x, 'value': x} for x in available_indicators],
-                    value='ItemSpecifics-Type'
-                ),
-            ], id = 'sunburst-drop-down'),
-            dcc.RadioItems(
-                id='sunburst-color-selector',
-                options=[{'label': i, 'value': i} for i in ['Mean Price', 'Median Price', 'Count', 'None']],
-                value='None',
-                labelStyle={'display': 'inline-block'},
-                style={'marginBottom': '1em'}
-            )
-        ], className="col-md-2"),
-
-        # Column: Map
+                html.H4([
+                    "Sunburst Chart",
+                ], className="container_title"),
+            ]),
+            # Sunburst Figure
+            html.Div([
+                dcc.Graph(figure = sunburst_fig, id = 'sunburst-figure')
+            ],
+            className="col-md-8"),
+            # Sunburst Dropdown Options
+            html.Div([
+                html.Br(),
+                html.H4('Add or Subtract Layers!'),
+                html.Button('+', id='add-layer-button', n_clicks=0),
+                html.Button('-', id='subtract-layer-button', n_clicks=0),
+                html.Br(),
+                html.H4('Select Layers!'),
+                html.Div([
+                    dcc.Dropdown(
+                        id={
+                            'type' : 'sunburst-layer-dropdown',
+                            'index' : 1,  
+                        },
+                        options=[{'label': x, 'value': x} for x in available_indicators[1:]],
+                        value='ItemSpecifics-Brand'
+                    ),
+                    dcc.Dropdown(
+                        id={
+                            'type' : 'sunburst-layer-dropdown',
+                            'index' : 2,  
+                        },
+                        options=[{'label': x, 'value': x} for x in available_indicators],
+                        value='ItemSpecifics-Type'
+                    ),
+                ], id = 'sunburst-drop-down'),
+                dcc.RadioItems(
+                    id='sunburst-color-selector',
+                    options=[{'label': i, 'value': i} for i in ['Mean Price', 'Median Price', 'Count', 'None']],
+                    value='None',
+                    labelStyle={'display': 'inline-block'},
+                    style={'marginBottom': '1em'}
+                )
+            ], className="col-md-4"),
+        ], className = 'six columns pretty_container'),
         html.Div([
-            dcc.Graph(figure = choropleth_fig)
-        ], className="col-md-6"),
+            html.Div([
+                html.H4([
+                    "World Map",
+                ], className="container_title"),
+            ]),
+            html.Div([
+                dcc.Graph(figure = choropleth_fig)
+            ], className="col-md-12"),
+        ], className = 'six columns pretty_container'),
     ], className="row"),
+
     # Row: Footer
     html.Div([
         html.Hr(),
@@ -256,7 +285,7 @@ def display_click_data(clickData):
             html.A(
                 html.Img(
                     src = image,
-                    style={'width': '10%'},  
+                    style={'width': '30%'},  
                 ),
             href = url,
             id='saxophone-image',
@@ -296,7 +325,7 @@ def updateSaxImage(left, right, clickData):
     
     return html.Img(
                     src = image,
-                    style={'width': '10%'},   
+                    style={'width': '30%'},   
                 ),
 
 
