@@ -35,10 +35,12 @@ def sunburstFig(df, parent_hierarchy, color_agg = 'Mean Price',):
     hovertemplate =
     '<i>Count</i>: %{value}'
     "<extra></extra>",
-    branchvalues="total"))
+    branchvalues="total",))
 
     fig.update_layout(
-        title = "Brand, Type, Price Sunburst Chart"
+        title = "Brand, Type, Price Sunburst Chart",
+        plot_bgcolor='rgb(0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)'
     )
 
     if color_agg == 'None':
@@ -58,7 +60,7 @@ def sunburstFig(df, parent_hierarchy, color_agg = 'Mean Price',):
 
         fig.update_layout(coloraxis_colorbar=dict(
             title=color_agg))
-    
+        
         return fig
 
 def choroplethFig(df):
@@ -80,6 +82,11 @@ def choroplethFig(df):
         showlakes=True, lakecolor="#7b7d8d",
     ),
     )
+    fig.update_layout(
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)'
+        )
+    fig.update_geos(bgcolor='rgba(0,0,0,0)')
     return fig
 
 def histogramFig(df):
@@ -104,6 +111,8 @@ def histogramFig(df):
             ticktext=["$100", "$500", "$1k", "$5k", "$10k"],
         )
     fig.update_layout(title = 'Distribution of Price for Sax Types',
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)'
     )
     return fig
 
@@ -118,6 +127,9 @@ def scatterFig(df_filter, color):
                 "<extra></extra>",
             mode='markers',
         ))
+        fig.update_layout(
+            paper_bgcolor='rgba(0,0,0,0)'
+        )
         return fig
     else:
         data = []
@@ -133,4 +145,7 @@ def scatterFig(df_filter, color):
                 "<extra></extra>"
             ))
         fig = go.Figure(data = data) 
+        fig.update_layout(
+            paper_bgcolor='rgba(0,0,0,0)'
+        )
         return fig
