@@ -197,17 +197,21 @@ def updateSunburstDropDown(add, subtract, values, old_output):
     n_layers = 2 + add - subtract
     n_layers = min(n_layers, 5)
     n_layers = max(n_layers, 1)
-
     if n_layers > len(old_output):
         return old_output + [dcc.Dropdown(
                     id={
                         'type' : 'sunburst-layer-dropdown',
                         'index' : n_layers,},
-                    options=[{'label': x, 'value': x} for x in available_indicators], # if x not in values],
+                    options=[{'label': x, 'value': x} for x in available_indicators if x not in values],
                    )]
 
     else:
         return old_output[:n_layers]
+
+@app.callback(Output({'type': 'sunburst-layer-dropdown', 'index': ALL}, 'options'),
+            [Input({'type': 'sunburst-layer-dropdown', 'index': ALL}, 'value')])
+def updateSunburstOptions(values):
+    return [[{'label': x, 'value': x} for x in available_indicators if (x not in values) or (x == i)] for i in values]
 
 @app.callback(Output('sunburst-figure', 'figure'),
               [Input({'type': 'sunburst-layer-dropdown', 'index': ALL}, 'value'),
