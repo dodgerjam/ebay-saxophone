@@ -4,6 +4,11 @@ import pandas as pd
 import io
 from datetime import datetime, timedelta
 import yaml
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
 
 class APIError(Exception):
         """An API Error Exception"""
@@ -20,10 +25,11 @@ class ItemFinder():
         def __init__(self):
                 s3_client = boto3.client('s3')
                 obj = s3_client.get_object(Bucket = 'ebayfindingdata', Key = 'ebay.yaml')['Body']
-                appid = yaml.load(obj, Loader=yaml.FullLoader)['svcs.ebay.com']['appid']
-                self.api = Connection(appid = appid, config_file=None, https=False, warnings=True)
-                self.from_time = (datetime.now() - timedelta(days=2, minutes=10)).isoformat()
-                self.to_time = (datetime.now() - timedelta(days=1, minutes=10)).isoformat()
+                logger.info('## ebay yaml file')
+                logger.info(obj)
+                self.api = Connection(appid = yaml.load(obj)['svcs.ebay.com']['appid'], config_file=None)
+                self.from_time = (datetime.now() +timedelta(minutes=10)).isoformat() 
+                self.to_time = (datetime.now() + timedelta(days=1, minutes=10)).isoformat()
 
         def api2df(self):
                 api_request = {
@@ -49,7 +55,7 @@ class ItemFinder():
                 'sortOrder' : 'EndTimeSoonest'
                 }
 
-                response = self.api.execute('findCompletedItems', api_request)
+                response = self.api.execute('findItemsByCategory', api_request)
                 
                 if response.dict()['ack'] == 'Failure':
                         raise APIError(response)
@@ -82,7 +88,7 @@ class ItemFinder():
                         'pageNumber': pageNumber},
                 'sortOrder' : 'EndTimeSoonest'
                 }
-                response = self.api.execute('findCompletedItems', api_request)
+                response = self.api.execute('findItemsByCategory', api_request)
 
                 if response.dict()['ack'] == 'Failure':
                         raise APIError(response)
@@ -102,9 +108,9 @@ class ItemFinder():
 
                 df.to_csv(s_buf)
 
-                # return s3.Bucket('ebayfindingdata').put_object(Key='finding/{}.csv'.format(datetime.now().strftime("%m-%d-%Y")), Body=s_buf.getvalue())
+                return s3.Bucket('ebayfindingdata').put_object(Key='finding/{}.csv'.format(datetime.now().strftime("%m-%d-%Y")), Body=s_buf.getvalue())
 
-                return df.to_csv('data/finding/{}.csv'.format(datetime.now().strftime("%m-%d-%Y")))
+                #return df.to_csv('{}.csv'.format(datetime.now().strftime("%m-%d-%Y")))
 
 def lambda_handler(event=None, context=None):
         itemf = ItemFinder()
@@ -112,3 +118,4 @@ def lambda_handler(event=None, context=None):
 
 if __name__ == "__main__":
     lambda_handler()
+

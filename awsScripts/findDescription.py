@@ -71,9 +71,6 @@ class ItemDescriptionFinder():
 
         # return df1.to_csv('data/descriptions/{}.csv'.format(yesterday))    
 
-def lambda_handler():
+def lambda_handler(event=None, context=None):
     idf = ItemDescriptionFinder()
     idf.findItemDescriptions()   
-
-if __name__ == "__main__":
-    lambda_handler()

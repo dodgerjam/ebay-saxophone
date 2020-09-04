@@ -4,8 +4,9 @@ import pandas as pd
 import io
 from datetime import datetime, timedelta
 import numpy as np
-import ebaysdk
 import yaml
+import ebaysdk
+
 
 class APIError(Exception):
     """An API Error Exception"""
@@ -34,11 +35,11 @@ class SpecificItemFinder():
                 'ItemID' : itemid,
                 'IncludeSelector' : ['ItemSpecifics'],
                 }
+
         try:
             response = self.api.execute('GetSingleItem', api_request)
         except ebaysdk.exception.ConnectionError:
             return None
-            
 
         if response.dict()['Ack'] == 'Failure':
             raise APIError(response)
@@ -66,17 +67,14 @@ class SpecificItemFinder():
     def allItemSpecifics(self, itemIDs):
         return pd.concat([self.itemSpecificGetter(itemid) for itemid in itemIDs])
 
-    def findSpecificItems(self, yesterday = (datetime.now() - timedelta(days=1)).strftime("%m-%d-%Y")):
+    def findSpecificItems(self):
         s3_client = boto3.client('s3')
         s3_resource = boto3.resource('s3')
         # bucket = s3.Bucket('ebayfindingdata')
-
+        yesterday = (datetime.now() - timedelta(days=1)).strftime("%m-%d-%Y")
         obj = s3_client.get_object(Bucket = 'ebayfindingdata', Key = 'finding/{}.csv'.format(yesterday))
-        # df = pd.read_csv(obj['Body'], index_col='itemId')
-        df = pd.read_csv('data/finding/{}.csv'.format('08-10-2020'), index_col='itemId')
-        # itemIDs = df.index.values
-        itemIDs = df.index + [101010]
-
+        df = pd.read_csv(obj['Body'], index_col='itemId')
+        itemIDs = df.index.values
         df1 = self.allItemSpecifics(itemIDs)
 
         s_buf = io.StringIO()
@@ -87,9 +85,8 @@ class SpecificItemFinder():
 
         # return df1.join(df).to_csv('data/shopping/{}.csv'.format(yesterday))    
 
-def lambda_handler():
+def lambda_handler(event=None, context=None):
     sif = SpecificItemFinder()
     sif.findSpecificItems()   
 
-if __name__ == "__main__":
-    lambda_handler()
+
