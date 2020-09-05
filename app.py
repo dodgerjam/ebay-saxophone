@@ -80,32 +80,38 @@ app.layout = html.Div([
                     "Scatter Chart",
                 ], className="container_title"),
             ]),
+            html.Div([
             # Dropdown Scatter Options
-            html.Div([
-                dcc.Dropdown(
-                    options = [{'label': x, 'value': x} for x in df['ItemSpecifics-Type'].unique() if x == x],
-                    value = sorted([x for x in df['ItemSpecifics-Type'].unique() if x ==x]),
-                    multi=True,
-                    className = "col-md-6",
-                    id = 'scatter-dropdown-type'
-                ),
-                dcc.Dropdown(
-                    options = [{'label': x, 'value': x} for x in df['Condition'].unique() if x == x],
-                    value = sorted([x for x in df['Condition'].unique() if x ==x]),
-                    multi=True,
-                    className = "col-md-6",
-                    id = 'scatter-dropdown-condition'
-                ),
-            ]),
-            html.Div([
-                dcc.Dropdown(
-                    options = [{'label': x, 'value': x} for x in df['ItemSpecifics-Brand'].unique() if x == x],
-                    value = sorted([x for x in df['ItemSpecifics-Brand'].unique() if x ==x]),
-                    multi=True,
-                    className = "col-md-12",
-                    id = 'scatter-dropdown-brand'
-                ),       
-            ]),
+                html.Div([
+                    dcc.Dropdown(
+                        options = [{'label': x, 'value': x} for x in df['ItemSpecifics-Type'].unique() if x == x],
+                        value = sorted([x for x in df['ItemSpecifics-Type'].unique() if x ==x]),
+                        multi=True,
+                        className = "col-md-6",
+                        id = 'scatter-dropdown-type',
+                        style = {'background':'rgb(53,53,53)', 'color':'white'}
+                        
+                    ),
+                    dcc.Dropdown(
+                        options = [{'label': x, 'value': x} for x in df['Condition'].unique() if x == x],
+                        value = sorted([x for x in df['Condition'].unique() if x ==x]),
+                        multi=True,
+                        className = "col-md-6",
+                        id = 'scatter-dropdown-condition',
+                        style = {'background':'rgb(53,53,53)'}
+                    ),
+                ]),
+                html.Div([
+                    dcc.Dropdown(
+                        options = [{'label': x, 'value': x} for x in df['ItemSpecifics-Brand'].unique() if x == x],
+                        value = sorted([x for x in df['ItemSpecifics-Brand'].unique() if x ==x]),
+                        multi=True,
+                        className = "col-md-12",
+                        id = 'scatter-dropdown-brand',
+                        style = {'background':'rgb(53,53,53)'}
+                    ),       
+                ]),
+            ], className = 'twelve columns pretty_container'),
             # Graph Dropdown
             html.Div([
                 dcc.Graph(figure = scatter_fig, id = 'scatter-figure'),
@@ -120,10 +126,11 @@ app.layout = html.Div([
                     ],
                     value='None',
                     labelStyle={'display': 'inline-block'},
-                    style={"textAlign": "centre"},
+                    style={"textAlign": "centre", 'margin-right': 10},
                 )
-            ], className="col-md-12"),
-        ], className = 'eight columns pretty_container'),
+            ], className = 'twelve columns pretty_container'),
+        ], className = 'eight columns pretty_outer_container'),
+
         # Selected Sax Listing
         html.Div([
             html.Div([
@@ -132,15 +139,18 @@ app.layout = html.Div([
                 ], className="container_title"),
             ]),
             html.Div([
-                html.Button('<', id='left-image-click', n_clicks=0,style = dict(display='none')),
-                html.A(
-                id = 'saxophone-image'
-                ),
-                html.Button('>', id='right-image-click', n_clicks=0, style = dict(display='none'))],
-            style={'textAlign': 'center'},
+                html.Div([
+                    html.Button('<', id='left-image-click', n_clicks=0,style = dict(display='none')),
+                    html.A(
+                    id = 'saxophone-image'
+                    ),
+                    html.Button('>', id='right-image-click', n_clicks=0, style = dict(display='none'))],
+                style={'textAlign': 'center'},
+            ),
+            ], className = 'twelve columns pretty_container'
             ),
         ], id = 'selected-sax-listing',
-        className='four columns pretty_container'),
+        className='four columns pretty_outer_container'),
     ], className = 'row'),     
     
     html.Div([
@@ -154,7 +164,7 @@ app.layout = html.Div([
             html.Div([
                 dcc.Graph(figure = sunburst_fig, id = 'sunburst-figure')
             ],
-            className="col-md-8"),
+            className='eight columns pretty_container'),
             # Sunburst Dropdown Options
             html.Div([
                 html.Br(),
@@ -180,7 +190,7 @@ app.layout = html.Div([
                         options=[{'label': x, 'value': x} for x in available_indicators],
                         value='ItemSpecifics-Type'
                     ),
-                ], id = 'sunburst-drop-down'),
+                ], id = 'sunburst-drop-down',),
                 dcc.RadioItems(
                     id='sunburst-color-selector',
                     options=[{'label': i, 'value': i} for i in ['Mean Price', 'Median Price', 'Count', 'None']],
@@ -188,8 +198,8 @@ app.layout = html.Div([
                     labelStyle={'display': 'inline-block'},
                     style={'marginBottom': '1em'}
                 )
-            ], className="col-md-4"),
-        ], className = 'six columns pretty_container'),
+            ], className='four columns pretty_container'),
+        ], className = 'six columns pretty_outer_container'),
         html.Div([
             html.Div([
                 html.H4([
@@ -198,8 +208,8 @@ app.layout = html.Div([
             ]),
             html.Div([
                 dcc.Graph(figure = choropleth_fig)
-            ], className="col-md-12"),
-        ], className = 'six columns pretty_container'),
+            ], className='twelve columns pretty_container'),
+        ], className = 'six columns pretty_outer_container'),
     ], className="row"),
 
     # Row: Footer
@@ -292,18 +302,21 @@ def display_click_data(clickData):
             ),
             html.Button('>', id='right-image-click', n_clicks=0)],
         style={'textAlign': 'center'},
+        className = 'twelve columns pretty_container'
         ),
-        html.P(
-            html.H5(title),
-        ),
-        dcc.Markdown(
-            '''
-            **Item ID:** {0} \n
-            **Price:** ${1:20,.2f} \n
-            **Condition:** {2} \n
-            **Description** {3}
-            '''.format(itemid, price, condition, description)
-        )
+        html.Div([
+            html.P(
+                html.H5(title),
+            ),
+            dcc.Markdown(
+                '''
+                **Item ID:** {0} \n
+                **Price:** ${1:20,.2f} \n
+                **Condition:** {2} \n
+                **Description** {3}
+                '''.format(itemid, price, condition, description)
+            )
+        ], className = 'twelve columns pretty_container')
     ]
 
     return children
