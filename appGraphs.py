@@ -91,7 +91,7 @@ def choroplethFig(df):
 
 def scatterFig(df_filter, color):
     if color == 'None':
-        fig = go.Figure(data = go.Scatter(
+        fig = go.Figure(data = go.Scattergl(
             x = df_filter['EndTime'],
             y = df_filter['ConvertedCurrentPrice-value'],
             text = df_filter['ItemID'],
