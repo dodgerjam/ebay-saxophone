@@ -280,13 +280,8 @@ def display_click_data(clickData):
         return html.H4("Selected Sax Listing", className="text-center")
     df1 = df.loc[df['ItemID']==clickData['points'][0]['text']]
 
-    title = df1['Title'].values[0]
-    itemid = df1['ItemID'].values[0]
-    price = df1['ConvertedCurrentPrice-value'].values[0]
-    url = df1['ViewItemURLForNaturalSearch'].values[0]
-    image = df1['PictureURL'].apply(ast.literal_eval).values[0][0]
-    condition = df1['Condition'].values[0]
-    description = df1['Description'].values[0]
+    fig_hist = ag.histogramFig(clickData['points'][0]['text'], df)
+
 
     children = [
         html.H4("Selected Sax Listing", className="text-center"),
@@ -294,10 +289,10 @@ def display_click_data(clickData):
             html.Button('<', id='left-image-click', n_clicks=0),
             html.A(
                 html.Img(
-                    src = image,
+                    src = df1['PictureURL'].apply(ast.literal_eval).values[0][0],
                     style={'width': '30%'},  
                 ),
-            href = url,
+            href = df1['PictureURL'].apply(ast.literal_eval).values[0][0],
             id='saxophone-image',
             ),
             html.Button('>', id='right-image-click', n_clicks=0)],
@@ -306,16 +301,22 @@ def display_click_data(clickData):
         ),
         html.Div([
             html.P(
-                html.H5(title),
+                html.H5(df1['Title'].values[0]),
             ),
             dcc.Markdown(
                 '''
                 **Item ID:** {0} \n
                 **Price:** ${1:20,.2f} \n
                 **Condition:** {2} \n
-                **Description** {3}
-                '''.format(itemid, price, condition, description)
-            )
+                
+                '''.format(df1['ItemID'].values[0],
+                 df1['ConvertedCurrentPrice-value'].values[0],
+                 df1['Condition'].values[0],
+                 # df1['Description'].values[0]
+                 )
+            ),
+            dcc.Graph(figure = fig_hist, id = 'hist-fig')
+            
         ], className = 'twelve columns pretty_container')
     ]
 

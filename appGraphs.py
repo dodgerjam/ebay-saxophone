@@ -3,6 +3,7 @@ import seaborn as sns
 import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
+from scipy.stats import percentileofscore
 
 def sunburstFig(df, parent_hierarchy, color_agg = 'Mean Price',):
     # df1 = df.groupby(['ItemSpecifics-Brand','ItemSpecifics-Type', 'Model'])['ConvertedCurrentPrice-value'].median().reset_index()
@@ -130,3 +131,90 @@ def scatterFig(df_filter, color):
             paper_bgcolor='rgba(0,0,0,0)',
         )
         return fig
+def getBinValues(step, x):
+    minbin = step*int(min(x)//step)
+    maxbin = step*int((max(x)//step) +1)
+    return minbin, maxbin
+
+def getBins(x):
+
+    if max(x) - min(x) > 10_000:
+        minbin, maxbin = getBinValues(500, x)
+        return range(minbin, maxbin, 500)
+
+    if max(x) - min(x) > 4000:
+        minbin, maxbin = getBinValues(200, x)
+        return range(minbin, maxbin, 200)
+
+    if max(x) - min(x) > 2000:
+        minbin, maxbin = getBinValues(100, x)
+        return range(minbin, maxbin, 100)
+
+    if max(x) - min(x) > 1000:
+        minbin, maxbin = getBinValues(50, x)
+        return range(minbin, maxbin, 50)
+
+    else:
+        minbin, maxbin = getBinValues(10, x)
+        return range(minbin, maxbin, 10)
+
+
+def histogramFig(itemID, df):
+
+    saxtype = df[df['ItemID']==itemID]['ItemSpecifics-Type'].values[0]
+    brand = df[df['ItemID']==itemID]['ItemSpecifics-Brand'].values[0]
+    price = df[df['ItemID']==itemID]['ConvertedCurrentPrice-value'].values[0]
+
+    cond1 = df['ItemSpecifics-Type']== saxtype
+    cond2 = df['ItemSpecifics-Brand']== brand
+
+    x = df[(cond1) & (cond2)]['ConvertedCurrentPrice-value'].values
+
+    bins = getBins(x)
+    colors = ['rgb(53,53,53)' for i in bins]
+    colors[np.digitize(price, bins)-1] = 'rgb(254,192,54)'
+
+    fig = go.Figure(go.Histogram(
+        x = x,
+        cumulative_enabled = True,
+        xbins = dict(
+                start = bins[0],
+                end = bins[-1],
+                size = bins[1]-bins[0],
+        ),
+        marker = dict(
+                    color = colors,
+                    line = dict(
+                        color = 'rgb(254,192,54)',
+                        width = 0.5
+                        )
+        )
+
+    ))
+
+    fig.update_layout(
+                title = f"{brand} - {saxtype} ",
+                template = "plotly_dark",
+                #paper_bgcolor='rgba(0,0,0,0)'
+            )
+    percentile = int(percentileofscore(x, price))
+
+    cmap = sns.diverging_palette(133, 10, as_cmap=True)
+    text_color = cmap(percentile/100)
+    fig.update_layout(
+            annotations=[
+                dict(
+                    x= bins[int(len(bins)*0.1)],
+                    y= len(x)*1.1,
+                    text=f"{percentile}%",
+                    xref="x",
+                    yref="y",
+                    showarrow = False,
+                    font=dict(
+                            size=30,
+                            color=f"rgba{text_color}"
+                            ),
+
+                ),])
+
+    return fig
