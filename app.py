@@ -24,7 +24,7 @@ external_stylesheets = ["https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/boo
 server = flask.Flask(__name__)
 app = dash.Dash(external_stylesheets=external_stylesheets, server=server)
  
-
+'''
 s3 = boto3.client('s3')
 s3.list_objects(Bucket = 'ebayfindingdata', Prefix = 'shopping/')
 
@@ -37,6 +37,8 @@ desc_df = pd.concat([pd.read_csv(s3.get_object(Bucket = 'ebayfindingdata', Key =
 df = df.join(desc_df.set_index('ItemID'), on = 'ItemID')
 
 df = df[~df['ItemID'].duplicated()]
+'''
+df = pd.read_csv('data.csv')
 
 df.loc[~df['ItemSpecifics-Type'].isna(), 'ItemSpecifics-Type'] = df[~df['ItemSpecifics-Type'].isna()]['ItemSpecifics-Type'].apply(iscu.cleanUpType)
 df.loc[~df['ItemSpecifics-Brand'].isna(),'ItemSpecifics-Brand'] = df[~df['ItemSpecifics-Brand'].isna()]['ItemSpecifics-Brand'].apply(iscu.cleanUpBrand)
