@@ -13,6 +13,25 @@ import appGraphs as ag
 import ast
 import flask
 
+def cleanUpDf(df):
+
+    df.loc[~df['ItemSpecifics-Type'].isna(), 'ItemSpecifics-Type'] = df[~df['ItemSpecifics-Type'].isna()]['ItemSpecifics-Type'].apply(iscu.cleanUpType)
+    df.loc[~df['ItemSpecifics-Brand'].isna(),'ItemSpecifics-Brand'] = df[~df['ItemSpecifics-Brand'].isna()]['ItemSpecifics-Brand'].apply(iscu.cleanUpBrand)
+    df.loc[~df['ItemSpecifics-Skill Level'].isna(), 'ItemSpecifics-Skill Level'] = df[~df['ItemSpecifics-Skill Level'].isna()]['ItemSpecifics-Skill Level'].apply(iscu.cleanUpSkill)
+    df['Condition'] = df['ConditionID'].apply(iscu.cleanUpCondition)
+
+
+    df.loc[df['ItemSpecifics-Type'].isna(), 'ItemSpecifics-Type'] = df[df['ItemSpecifics-Type'].isna()]['Title'].apply(iscu.extractTypeFromTitle)
+    df.loc[df['ItemSpecifics-Brand'].isna(),'ItemSpecifics-Brand'] = df[df['ItemSpecifics-Brand'].isna()]['Title'].apply(iscu.extractBrandFromTitle)
+
+    df['Model'] = np.nan
+    df.loc[df['ItemSpecifics-Brand']=='Selmer', 'Model'] = df.loc[df['ItemSpecifics-Brand']=='Selmer', 'Title'].apply(iscu.selmerModel)
+    df.loc[df['ItemSpecifics-Brand']=='Yamaha', 'Model'] = df.loc[df['ItemSpecifics-Brand']=='Yamaha', 'Title'].apply(iscu.yamahaModel)
+    df.loc[df['ItemSpecifics-Brand']=='Yanagisawa', 'Model'] = df.loc[df['ItemSpecifics-Brand']=='Yanagisawa', 'Title'].apply(iscu.yanagisawaModel)
+    df.loc[~df['Model'].isna(), 'ItemSpecifics-Skill Level'] = iscu.extractSkillFromModel(df.loc[~df['Model'].isna()])
+
+    return df
+
 
 
 
@@ -331,24 +350,7 @@ def updateSaxImage(left, right, clickData):
                     style={'width': '30%'},   
                 ),
 
-def cleanUpDf(df):
 
-    df.loc[~df['ItemSpecifics-Type'].isna(), 'ItemSpecifics-Type'] = df[~df['ItemSpecifics-Type'].isna()]['ItemSpecifics-Type'].apply(iscu.cleanUpType)
-    df.loc[~df['ItemSpecifics-Brand'].isna(),'ItemSpecifics-Brand'] = df[~df['ItemSpecifics-Brand'].isna()]['ItemSpecifics-Brand'].apply(iscu.cleanUpBrand)
-    df.loc[~df['ItemSpecifics-Skill Level'].isna(), 'ItemSpecifics-Skill Level'] = df[~df['ItemSpecifics-Skill Level'].isna()]['ItemSpecifics-Skill Level'].apply(iscu.cleanUpSkill)
-    df['Condition'] = df['ConditionID'].apply(iscu.cleanUpCondition)
-
-
-    df.loc[df['ItemSpecifics-Type'].isna(), 'ItemSpecifics-Type'] = df[df['ItemSpecifics-Type'].isna()]['Title'].apply(iscu.extractTypeFromTitle)
-    df.loc[df['ItemSpecifics-Brand'].isna(),'ItemSpecifics-Brand'] = df[df['ItemSpecifics-Brand'].isna()]['Title'].apply(iscu.extractBrandFromTitle)
-
-    df['Model'] = np.nan
-    df.loc[df['ItemSpecifics-Brand']=='Selmer', 'Model'] = df.loc[df['ItemSpecifics-Brand']=='Selmer', 'Title'].apply(iscu.selmerModel)
-    df.loc[df['ItemSpecifics-Brand']=='Yamaha', 'Model'] = df.loc[df['ItemSpecifics-Brand']=='Yamaha', 'Title'].apply(iscu.yamahaModel)
-    df.loc[df['ItemSpecifics-Brand']=='Yanagisawa', 'Model'] = df.loc[df['ItemSpecifics-Brand']=='Yanagisawa', 'Title'].apply(iscu.yanagisawaModel)
-    df.loc[~df['Model'].isna(), 'ItemSpecifics-Skill Level'] = iscu.extractSkillFromModel(df.loc[~df['Model'].isna()])
-
-    return df
 
 if __name__ == '__main__':
     app.run_server(debug=True)
