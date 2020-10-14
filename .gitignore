@@ -5,4 +5,5 @@ package/
 __pycache__/
 .vscode/
 .DS_Store
+ebay.yaml
 
