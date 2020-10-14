@@ -30,8 +30,8 @@ s3.list_objects(Bucket = 'ebayfindingdata', Prefix = 'shopping/')
 keys = [o['Key'] for o in s3.list_objects(Bucket = 'ebayfindingdata', Prefix = 'shopping')['Contents'] if '.csv' in o['Key']]
 desc_keys = [o['Key'] for o in s3.list_objects(Bucket = 'ebayfindingdata', Prefix = 'description')['Contents'] if '.csv' in o['Key']]
 
-df = pd.concat([pd.read_csv(s3.get_object(Bucket = 'ebayfindingdata', Key = k)['Body']) for k in keys])
-desc_df = pd.concat([pd.read_csv(s3.get_object(Bucket = 'ebayfindingdata', Key = k)['Body']) for k in desc_keys])
+df = pd.concat([pd.read_csv(s3.get_object(Bucket = 'ebayfindingdata', Key = k)['Body']) for k in keys[:2]])
+desc_df = pd.concat([pd.read_csv(s3.get_object(Bucket = 'ebayfindingdata', Key = k)['Body']) for k in desc_keys[:2]])
 
 df = df.join(desc_df.set_index('ItemID'), on = 'ItemID')
 
