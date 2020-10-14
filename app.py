@@ -11,6 +11,7 @@ import numpy as np
 import seaborn as sns
 import appGraphs as ag
 import ast
+import flask
 
 
 
@@ -20,8 +21,8 @@ import ast
 external_stylesheets = ["https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css",'https://codepen.io/chriddyp/pen/bWLwgP.css',
 "https://code.jquery.com/jquery-3.2.1.min.js" ,"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"]
 
-
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+server = flask.Flask(__name__)
+app = dash.Dash(external_stylesheets=external_stylesheets, server=server)
  
 
 s3 = boto3.client('s3')
